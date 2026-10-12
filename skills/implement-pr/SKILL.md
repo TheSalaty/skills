@@ -55,6 +55,6 @@ A finding that would widen the contract is an escalation under step 2's boundary
 
 Commit the complete change, push it, and use the `$file-pr` skill to open the PR.
 
-Use the `$babysit-pr` skill until required CI and review automation are green. Address valid review feedback with the `$address-pr-comments` skill, re-run the affected evidence, and continue babysitting.
+Use the `$babysit-pr` skill until required CI and review automation are green. It addresses review feedback; re-run the evidence each fix affects.
 
-Finish only when the PR is merge-ready or an external blocker remains. Report under these headings, in order, leaving out empty ones: **Blocked on me** (the exact blocker or decision), **Changed** (PR URL, verified checks, review state), **Found** (out-of-scope findings).
+Finish only when the PR is merge-ready or an external blocker remains. Report under these headings, in order, leaving out empty ones: **Blocked on you** (the exact blocker or decision), **Changed** (PR URL, verified checks, review state), **Found** (out-of-scope findings).
