@@ -16,6 +16,8 @@ metadata:
 
 Before filing, check whether a PR for this branch already exists.
 
+Run `git fetch origin <base>` and read the change as `git diff origin/<base>...HEAD`. A local base branch can lag the remote and pull unrelated commits into the description.
+
 PR title and body must be in american english. Use the domain terms from `GLOSSARY.md` when the repo has one.
 
 Make sure the title follows the `$conventional-commits` skill. Prefer a concise, human-readable title that explains why the change matters:
