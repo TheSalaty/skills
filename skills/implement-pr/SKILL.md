@@ -40,16 +40,30 @@ Before review, run the affected package's complete test, typecheck, lint, and bu
 
 ## 5. Review cold
 
-Dispatch `$code-review`, `$ponytail-review` and `$bug-review` in parallel as subagents, each handed the diff and the contract and nothing else.
+Review spend scales with the diff. Every reviewer gets the diff command, the contract file path, and only what its axis needs.
 
-One cold round. Treat findings as hypotheses:
+**Base.** Run `git fetch origin <base-branch>` and diff against `origin/<base-branch>`. A worktree's local base branch lags the remote and pulls unrelated commits into the diff. The review diff is `git diff origin/<base-branch>...HEAD`.
+
+**Depth.** Size the diff with `git diff --shortstat origin/<base-branch>...HEAD`:
+
+- **Light:** under about 50 changed lines that delete, rename, or adjust config, copy or docs without adding behavior. Run `$bug-review` alone.
+- **Full:** everything else, and any diff touching auth, permissions, money, persisted data or migrations, concurrency, or a public interface, whatever its size. Run `$bug-review`, `$ponytail-review` and `$code-review`.
+
+**Standards.** For a full review, select the standards files once. Read the repo's standards index, take the files it marks as always applying plus the domain files whose scope matches a touched path, and write the list into the contract file. With no index, select by each file's stated scope. This list is the complete standards set for every round; `$bug-review` and `$ponytail-review` get none.
+
+**Dispatch.** Start `$bug-review` and `$ponytail-review` as background subagents. Then run `$code-review` yourself, with `origin/<base-branch>` as its fixed point, the contract file as its spec, and the selected list as its standards sources; its own Standards and Spec subagents are the cold readers. Each subagent's completion notification is your wake signal, so schedule no timers or wakeups for them.
+
+Treat findings as hypotheses:
 
 1. Verify each finding against the contract and current code.
 2. Fix every valid, in-scope finding.
 3. Record false positives and out-of-scope findings, leaving the change as it stands.
-4. Re-run the checks your fixes touched, and re-review the fixes alone.
+4. Re-run the checks your fixes touched.
+5. Re-dispatch only the reviewers whose findings drove a fix. Hand each the fix hunks (`git diff <reviewed-sha>..HEAD`, or that SHA as `$code-review`'s fixed point) and its prior findings with your verdicts. Repeat until a round raises nothing new.
 
 A finding that would widen the contract is an escalation under step 2's boundary, carrying a recommended default and the boundary reason.
+
+Completion: every finding has a recorded verdict (fixed, false positive, or out of scope) in the contract file.
 
 ## 6. File and babysit the PR
 
