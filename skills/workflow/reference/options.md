@@ -11,7 +11,9 @@ level deep, with the more specific bag winning key by key: `namespace → create
 |---|---|---|
 | `id` | — | Namespace id; scopes the cross-workflow concurrency cap |
 | `concurrency` | unlimited | Ceiling across every workflow in the namespace |
-| `redis` | `Settings.defaultConnection()` | Shared connection, owned by the namespace (it is duplicated once for pub/sub) |
+| `redis` | process-wide `localhost:6379` connection | Shared connection, owned by the namespace (it is duplicated once for pub/sub) |
+| `logger` | none | Inherited by every workflow, queue and worker of the namespace |
+| `autoClose` | `true` | Close the namespace on `SIGINT`/`SIGTERM`/exit |
 | `prefix` | `wf` | Global redis key prefix |
 | `queueOptions` | — | Defaults for its workflows |
 | `workerOptions` | — | ″ |
@@ -54,9 +56,9 @@ are not accepted in the options bag.
 | `safetyTimeout` | `5` | Backstop re-poll timeout in **seconds** (the loop is otherwise woken by pub/sub) |
 | `promoteBatchSize` | `500` | Max due delayed jobs promoted per reserve; larger backlogs drain in chunks |
 | `keepFailed` | `100` | Max retained failed jobs, trimmed by finish time |
-| `onError` | `Settings.logger.error` | Called with a worker-internal/unexpected error |
-| `onFailed` | `Settings.logger.error` | Called with `(job, error)` each time a handler throws and the job fails |
-| `metrics` | `Settings.metrics` | `{ meter, prefix }` — see below |
+| `onError` | namespace `logger.error` | Called with a worker-internal/unexpected error |
+| `onFailed` | namespace `logger.error` | Called with `(job, error)` each time a handler throws and the job fails |
+| `metrics` | none | `{ meter, prefix }` — see below |
 
 `onFailed`'s `job` is a frozen `ReservedJob`: `{ id, groupId, data, attemptsMade, priority }`, where
 `data` is the still-serialized payload.
@@ -66,7 +68,7 @@ delay in `[0, min(cap, base * factor^(attempt-1))]` ms — full jitter, so retri
 
 ## Metrics
 
-Set `Settings.metrics` globally or `workerOptions.metrics` per workflow, both `{ meter, prefix }`
+Set `workerOptions.metrics` on the namespace or per workflow, as `{ meter, prefix }`
 where `meter` is an OTel `Meter`. Registered on `work()`, they publish three observable gauges,
 each carrying a `workflow_id` attribute:
 

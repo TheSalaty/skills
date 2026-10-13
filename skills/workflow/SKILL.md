@@ -5,7 +5,7 @@ description: >
   Use when working with WorkflowNamespace / createWorkflow, step.do / step.wait /
   step.waitUntil, workflow.run / runIn / runAt / work(), job.wait(),
   upsertSchedule cron schedules, groupId ordering and numeric priority, or the
-  Settings / createRedis connection setup.
+  createRedis connection setup.
 ---
 
 # @falcondev-oss/workflow
@@ -20,24 +20,23 @@ Three layers, each minted by the one above:
 | `Workflow` | One queue + one job type: input schema, `run` body, its worker |
 | `WorkflowJob` | One enqueued run: `id`, `groupId`, `wait()` |
 
-Everything is exported from the package root: `WorkflowNamespace`, `Settings`, `createRedis`, `expBackoff`, `TimeoutError`, `ResultExpiredError`, `JobAlreadyExistsError`.
-
-> The package README still shows `new Workflow({ … })` with no namespace. That constructor is namespace-bound — always go through `namespace.createWorkflow()`.
+Everything is exported from the package root: `WorkflowNamespace`, `createRedis`, `expBackoff`, `TimeoutError`, `ResultExpiredError`, `JobAlreadyExistsError`, `NonRecoverableError`. Always mint workflows through the namespace (`createWorkflow`), never `new Workflow()`.
 
 ## Setting up
 
 ```ts
-import { createRedis, Settings, WorkflowNamespace } from '@falcondev-oss/workflow'
+import { createRedis, WorkflowNamespace } from '@falcondev-oss/workflow'
 
-Settings.logger = console // opt-in; no logging by default
-Settings.defaultConnection = async () => createRedis({ url: process.env.REDIS_URL })
-
-const namespace = new WorkflowNamespace({ id: 'app' })
+const namespace = new WorkflowNamespace({
+  id: 'app',
+  redis: await createRedis({ url: process.env.REDIS_URL }),
+  logger: console, // opt-in; no logging by default
+})
 ```
 
-`Settings` is a global with three optional fields: `logger` (`info`/`success`/`error`/`debug`/`warn`, all optional), `defaultConnection`, and `metrics`. `createRedis` applies the connection options the library needs (`maxRetriesPerRequest: null`, offline queue off, a capped retry strategy) — build connections with it rather than `new IORedis()`. Pass `redis` on the namespace to override the default connection per namespace.
+The namespace owns all configuration: `redis`, `logger` (`info`/`success`/`error`/`debug`/`warn`, all optional), and the option bags its workflows inherit. Without `redis` it falls back to a process-wide connection to `localhost:6379`. `createRedis` applies the connection options the library needs (`maxRetriesPerRequest: null`, offline queue off, a capped retry strategy), so build connections with it rather than `new IORedis()`.
 
-The namespace registers its own exit hook, so `SIGTERM` drains workers and disconnects. Call `namespace.close()` explicitly in tests.
+The namespace registers its own exit hook, so `SIGTERM` drains workers and disconnects. Pass `autoClose: false` and call `namespace.close()` yourself in tests.
 
 ## Defining a workflow
 
@@ -148,4 +147,4 @@ await onboarding.upsertSchedule('nightly-digest', {
 
 Tracing is automatic when an OTel SDK is registered: producer spans propagate context into the payload, so the worker's job span and each step span link back to whatever enqueued the job. The `span` in `run`'s and `step.do`'s context is that live span — set attributes on it directly.
 
-Queue-depth metrics are opt-in via `Settings.metrics` or `workerOptions.metrics`, both `{ meter, prefix }`, registered when `work()` is called. See [`reference/options.md`](reference/options.md) for the exported gauges and the full worker tuning surface (`lockMs`, `maxStalledCount`, `stalledInterval`, `safetyTimeout`, `promoteBatchSize`, `keepFailed`, `onError`, `onFailed`).
+Queue-depth metrics are opt-in via `workerOptions.metrics` (`{ meter, prefix }`, settable on the namespace for every workflow), registered when `work()` is called. See [`reference/options.md`](reference/options.md) for the exported gauges and the full worker tuning surface (`lockMs`, `maxStalledCount`, `stalledInterval`, `safetyTimeout`, `promoteBatchSize`, `keepFailed`, `onError`, `onFailed`).
