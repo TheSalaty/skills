@@ -1,8 +1,8 @@
 # Option reference
 
 Every option bag below can be set on the namespace (as a default for its workflows), on
-`createWorkflow`, and — for worker and job options — at the call site. The merge is shallow, one
-level deep, with the more specific bag winning key by key: `namespace → createWorkflow → work()` /
+`createWorkflow` / `defineWorkflow`, and — for worker and job options — at the call site. The merge is shallow, one
+level deep, with the more specific bag winning key by key: `namespace → createWorkflow / defineWorkflow → work()` /
 `run()`.
 
 ## `new WorkflowNamespace(opts)`

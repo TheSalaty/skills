@@ -2,10 +2,11 @@
 name: workflow
 description: >
   Durable, type-safe queue workers with @falcondev-oss/workflow on Redis.
-  Use when working with WorkflowNamespace / createWorkflow, step.do / step.wait /
-  step.waitUntil, workflow.run / runIn / runAt / work(), job.wait(),
-  upsertSchedule cron schedules, groupId ordering and numeric priority, or the
-  createRedis connection setup.
+  Use when working with WorkflowNamespace / createWorkflow / defineWorkflow,
+  handle() and returns<T>(), step.do / step.wait / step.waitUntil,
+  workflow.run / runIn / runAt / work(), job.wait(), upsertSchedule cron
+  schedules, groupId ordering and numeric priority, or the createRedis
+  connection setup.
 ---
 
 # @falcondev-oss/workflow
@@ -17,10 +18,11 @@ Three layers, each minted by the one above:
 | Layer | Owns |
 |---|---|
 | `WorkflowNamespace` | The redis connection, the pub/sub connection, a cross-workflow concurrency cap |
-| `Workflow` | One queue + one job type: input schema, `run` body, its worker |
+| `WorkflowDefinition` | One queue + one job type: input schema and options. Enqueues, schedules, inspects |
+| `Workflow` | A definition plus its `run` handler, so it can also `work()` |
 | `WorkflowJob` | One enqueued run: `id`, `groupId`, `wait()` |
 
-Everything is exported from the package root: `WorkflowNamespace`, `createRedis`, `expBackoff`, `TimeoutError`, `ResultExpiredError`, `JobAlreadyExistsError`, `NonRecoverableError`. Always mint workflows through the namespace (`createWorkflow`), never `new Workflow()`.
+Everything is exported from the package root: `WorkflowNamespace`, `createRedis`, `expBackoff`, `TimeoutError`, `ResultExpiredError`, `JobAlreadyExistsError`, `NonRecoverableError`. Always mint workflows through the namespace (`createWorkflow` / `defineWorkflow`), never `new Workflow()`.
 
 ## Setting up
 
@@ -60,7 +62,29 @@ const onboarding = namespace.createWorkflow({
 - **`run`** receives `{ input, step, span }` and its resolved value becomes the job output. Payload, step results, and output all round-trip through superjson, so `Date`, `Map`, `Set`, and `BigInt` survive intact.
 - `queueOptions` / `workerOptions` / `jobOptions` set per-workflow defaults; the same keys on the namespace are shallow-merged underneath them. See [`reference/options.md`](reference/options.md).
 
-## Running jobs
+## Definitions and handlers
+
+`createWorkflow` puts the handler in the workflow's module, so every module that enqueues it also loads everything the handler imports. When enqueueing code should stay cheap (client modules, import cycles, slow test startup), split it:
+
+```ts
+// jobs/onboarding.ts: imported wherever jobs are enqueued
+export const onboarding = namespace
+  .defineWorkflow({ id: 'onboarding', schema: z.object({ userId: z.string() }) })
+  .returns<{ engaged: boolean }>()
+
+// handlers/onboarding.ts: imported only by the worker process
+export default onboarding.handle(async ({ input, step }) => ({ engaged: await check(input.userId) }))
+
+// worker.ts
+import onboarding from './handlers/onboarding'
+await onboarding.work()
+```
+
+- `defineWorkflow` takes every `createWorkflow` option except `run`. The definition has every workflow method except `work()`.
+- `returns<T>()` declares the output type, so `job.wait()` is typed for enqueueing code. Without it the definition's output is `unknown`.
+- `handle(run)` returns a full `Workflow`. Its handler must return the declared type; without `returns<T>()` the output is inferred from the handler.
+- `handle()` and `returns()` are type errors on a workflow that already has a handler. The library never `import()`s handlers, so the worker entry must import every handler module it serves.
+
 
 ```ts
 await onboarding.work() // start a worker in this process
