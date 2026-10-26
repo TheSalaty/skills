@@ -23,4 +23,5 @@ npx skills@latest add falcondev-oss/skills -g
 | [`babysit-pr`](skills/babysit-pr/SKILL.md) | Monitor a pull request through review and CI |
 | [`ponytail-review`](skills/ponytail-review/SKILL.md) | Reviews a diff for over-engineering only: reinvented standard library, duplicated repo helpers, unneeded dependencies, speculative abstractions, dead flexibility. One numbered line per finding — location, what to cut, what replaces it — and a `net: -<N> lines possible` score. Reads an accompanying contract or ticket as the line between speculative and required. |
 | [`bug-review`](skills/bug-review/SKILL.md) | Reviews a diff for merge-blocking bugs only. Each finding carries `file:line`, why it is wrong, and how to demonstrate the failure; unconfirmed suspicions are marked with where it looked. |
+| [`spec-review`](skills/spec-review/SKILL.md) | Reviews a diff against its ticket or contract only: missing, unrequested and wrongly implemented requirements. Each finding carries `file:line`, the quoted requirement, and what the diff does instead. |
 | [`quick-iteration`](skills/quick-iteration/SKILL.md) | Enter a quick iteration session |
