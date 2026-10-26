@@ -5,9 +5,9 @@ description: Monitor a pull request through review and CI. Use when the user ask
 
 # Babysit PR
 
-Wait on events, not the clock. Call the T3 Code tool `watch_pull_request` on the PR and end your turn: it wakes you when checks finish, comments arrive, or the branch falls behind. Watcher events and subagent completion notifications are your only wake signals; schedule no timers, sleeps, wakeups or polling loops. Reserve a bare status read for the first look and the final confirmation.
+Wait on events, not the clock. In T3 Code, call its `watch_pull_request` tool on the PR and end your turn: it wakes you when checks finish, comments arrive, or the branch falls behind. Only outside T3 Code, use your harness's own PR watcher the same way. Watcher events and subagent completion notifications are your only wake signals; schedule no timers, sleeps, wakeups or polling loops. Reserve a bare status read for the first look and the final confirmation.
 
-When the PR is merge-ready or you hand back, call `unwatch_pull_request` on it.
+When the PR is merge-ready or you hand back, stop the watcher: `unwatch_pull_request` in T3 Code, the harness's equivalent elsewhere.
 
 Only act on checks and comments newer than the latest push. Verify every bot finding against the source before changing code. Fix real findings and CI failures, distinguish repository failures from infrastructure flakes, and reply with a written reason when dismissing false positives.
 
