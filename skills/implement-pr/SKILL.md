@@ -46,7 +46,7 @@ Review spend scales with the diff. Every reviewer is a fresh background subagent
 **Depth.** Size the diff with `git diff --shortstat origin/<base-branch>...HEAD`:
 
 - **Light:** under about 50 changed lines that delete, rename, or adjust config, copy or docs without adding behavior. Run `$bug-review` alone.
-- **Full:** everything else, and any diff touching auth, permissions, money, persisted data or migrations, concurrency, or a public interface, whatever its size. Run `$bug-review`, `$spec-review` and `$ponytail-review`.
+- **Full:** everything else, and any diff touching auth, permissions, money, persisted data or migrations, concurrency, or a public interface, whatever its size. Run `$bug-review`, `$spec-review` and `$simplicity-review`.
 
 Treat findings as hypotheses:
 
@@ -56,7 +56,7 @@ Treat findings as hypotheses:
 4. Re-run the checks your fixes touched.
 5. Re-dispatch only the reviewers whose findings drove a fix, handing each the fix hunks (`git diff <reviewed-sha>..HEAD`) and its prior findings with your verdicts. Repeat until a round raises nothing new, within each reviewer's round cap.
 
-**Round caps.** `$bug-review` and `$spec-review`: 3 rounds, or 5 while a security finding (auth, permissions, data exposure, injection) drives the fix. `$ponytail-review`: 1 round.
+**Round caps.** `$bug-review` and `$spec-review`: 3 rounds, or 5 while a security finding (auth, permissions, data exposure, injection) drives the fix. `$simplicity-review`: 1 round.
 
 Completion: every finding has a recorded verdict (fixed, false positive, or out of scope) in the contract file.
 
