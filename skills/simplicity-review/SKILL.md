@@ -20,10 +20,11 @@ Simplicity is your only axis; bugs, spec gaps and style belong to the other revi
 
 - `delete:` code nothing needs: dead code, unused fields, props, params and options, unrequested features, re-checks of what an upstream guard already ensures, leftovers of the change. Replacement: nothing.
 - `reuse:` something that already exists: a repo helper, component, type or constant (name the path), a stdlib function, a platform feature, an installed dependency. A dependency added for a few lines is a `reuse:` of the code it replaces.
-- `yagni:` an abstraction with one implementation, config nobody sets, a wrapper or layer with one caller, perf machinery (lazy loading, caches, memoization, retries) no requirement or measurement asked for.
+- `yagni:` an abstraction with one implementation, config nobody sets, a layer with one caller, perf machinery (lazy loading, caches, memoization, retries) no requirement or measurement asked for.
+- `inline:` a single-use helper or wrapper, or one function split into pieces nothing else calls. Fold the logic into its call site. A separate function stays only when it is reused, composable, hides a genuinely complex boundary, or its name reads clearer at the call site than its body would.
 - `derive:` stored or synced state the code can compute from data it already has: a column, a store field, a prop.
 - `shrink:` the same logic in fewer lines: copy-paste folded into one helper, a literal or rule repeated three or more times, a switch turned into a table, queries merged. Show the shorter form.
-- `ask:` complexity the contract requires that looks out of proportion to its need, such as a rare failure path, an error taxonomy or a cache. Quote the contract line; the user decides.
+- `ask:` complexity the contract requires that looks out of proportion to its need, such as a rare failure path, an error taxonomy or a cache. Quote the contract line; the user decides. A guard against a speculative or vanishingly unlikely race or security edge case is an `ask:` too, contract or not: name its concrete failure mode, likelihood and complexity cost.
 
 Tests are code: cut a test that repeats another (name the test that already covers the case) and hoist duplicated fixtures.
 
@@ -38,7 +39,7 @@ Report a cut only when all of these hold:
 - You can state it without a caveat. A cut you could not confirm stays out of the report.
 - A cut test suite still goes red against the old code.
 
-Keep validation at trust boundaries, error handling that prevents data loss, security, accessibility, anything the contract asks for, and one smoke test or assert-based self-check per new piece of logic. Moved or merged code keeps its error handling and validation.
+Keep validation at trust boundaries, error handling that prevents data loss, security against a concrete threat, accessibility, anything the contract asks for, and one smoke test or assert-based self-check per new piece of logic. Moved or merged code keeps its error handling and validation.
 
 ## Report
 
