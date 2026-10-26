@@ -77,3 +77,7 @@ Only offer to create an ADR when all three are true:
 3. **The result of a real trade-off**: there were genuine alternatives and you picked one for specific reasons
 
 If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
+
+## Ship glossary and ADR changes
+
+When the session has changed `GLOSSARY.md` or an ADR, commit those files alone on a `docs/<slug>` branch off the latest default branch, then call the Skill tool with "file-pr" to push it and open the PR. This holds even when the work happened on a feature branch. Open the PR unprompted, as the default end of every such session. Done when the PR is open; report its link.
