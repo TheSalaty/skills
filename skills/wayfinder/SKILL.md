@@ -100,6 +100,10 @@ Out-of-scope work never graduates (the frontier stops at the destination), so it
 
 Ruling something out of scope is a scoping act, not a step on the route. When a ticket that already exists turns out to sit past the destination (mis-scoped in while charting, or exposed by a resolution), **close it** (a closed ticket is unambiguously off the frontier) and leave one line in the **Out of scope** section: the gist plus why it's out of scope, linking the closed ticket. It stays out of **Decisions so far**, which records the route actually walked; a scope boundary isn't a step on it.
 
+## Arriving
+
+The map is done when it has no open children and **Not yet specified** is empty: every patch graduated into a ticket, settled by a resolution, or moved to **Out of scope** with its reason. The session that closes the last open ticket checks this. Remaining fog graduates into fresh tickets in that session, and the map stays open for them. Once the map is done, comment the next step on the map (`/to-spec` when the destination is a spec) and close it.
+
 ## Invocation
 
 Two modes. Either way, **never resolve more than one ticket per session**, with the exception of research tickets.
@@ -125,6 +129,7 @@ User invokes with a map (URL or number). A ticket is **optional**: without one, 
 2. Choose the ticket. If the user named one, use it. Otherwise take the first frontier ticket in order. **Claim it**: assign it to yourself before any work.
 3. Resolve it as the type its `wayfinder:<type>` label names (see [Ticket Types](#ticket-types)). Read the label, not just the body: the body never states the type. **Zoom as needed**: fetch the full body of any related or closed ticket on demand; call the Skill tool for whichever skills the `## Notes` block names. If in doubt, call the Skill tool twice, for "grilling" and "domain-modeling".
 4. Record the resolution: post the answer as a **resolution comment**, **close** the issue, and **append a context pointer** to the map's Decisions-so-far. If the session changed `GLOSSARY.md` or an ADR, commit those files alone on a `docs/<ticket-slug>` branch off the latest default branch, open a PR by calling the Skill tool with "file-pr", and link the PR from the resolution comment. The ticket is done only when that PR is open.
-5. Add newly-surfaced tickets (create-then-wire); graduate any fog the answer has made specifiable, clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If the answer reveals that a ticket (this one or another) sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets.
+5. Add newly-surfaced tickets (create-then-wire); graduate any fog the answer has made specifiable, clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If the answer reveals that a ticket (this one or another) sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets: rewrite an open ticket's body; on a closed ticket, comment the correction linking this one and rewrite its Decisions-so-far gist.
+6. If the map has no open children left, follow [Arriving](#arriving).
 
 The user may run unblocked tickets in parallel, so expect other sessions to be editing the tracker concurrently.
