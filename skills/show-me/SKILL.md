@@ -1,6 +1,12 @@
 ---
 name: show-me
 description: Show a change, flow or structure visually with the smallest fitting view (diff, call tree, file tree, Mermaid, or a focused HTML file). Use when the user says "show me", asks to visualize or diagram something, or another skill or instruction asks for a `$show-me` view.
+metadata:
+  credits:
+    - skill: show-me
+      author: Dex Horthy
+      organisation: Humanlayer
+      url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
 ---
 
 Help the user understand the current topic of conversation visually. Skip the preamble and keep prose brief. Pick the smallest view that makes the key point clear.
