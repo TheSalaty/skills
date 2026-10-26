@@ -3,4 +3,4 @@ interface:
   short_description: "Implement and babysit a PR until it is green"
   default_prompt: "Use $implement-pr to implement this work and deliver a merge-ready pull request."
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true
