@@ -40,7 +40,7 @@ GOOD
 
 > ✅ My "new worktree" default was ignored when starting new threads on existing worktrees. Super unintuitive. Now your preferences always apply.
 
-Use the applicable sections from this body structure in this exact order. Replace every placeholder and omit sections that have no content. If the repo has `.github/pull_request_template.md`, fill that template instead and place these sections inside it:
+Use the applicable sections from this body structure in this exact order. Replace every placeholder and omit sections that have no content. If `git ls-files .github/pull_request_template.md` prints the path, fill that template instead and place these sections inside it:
 
 ````markdown
 ## 📝 Summary
