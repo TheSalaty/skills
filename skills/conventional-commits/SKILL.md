@@ -21,20 +21,22 @@ Every commit, branch, PR, and issue you name follows the Conventional Commits 1.
 
 **Types** — pick the one that matches what the diff _actually does_:
 
-| type        | use for                                                 | SemVer |
-| ----------- | ------------------------------------------------------- | ------ |
-| `feat`      | a new feature                                           | MINOR  |
-| `fix`       | a bug fix                                               | PATCH  |
-| `docs`      | documentation only                                      | —      |
-| `style`     | formatting, no code-meaning change                      | —      |
-| `refactor`  | code change that neither fixes a bug nor adds a feature | —      |
-| `perf`      | a performance improvement                               | —      |
-| `test`      | adding or correcting tests                              | —      |
-| `build`     | build system or dependencies                            | —      |
-| `ci`        | CI configuration                                        | —      |
-| `chore`     | anything else with no production-code effect            | —      |
-| `wayfinder` | a wayfinder map ticket/issue                            | —      |
-| `spec`      | a spec (e.g. from a wayfinder map via `/to-spec`)       | —      |
+| type        | use for                                                         | SemVer |
+| ----------- | --------------------------------------------------------------- | ------ |
+| `feat`      | a new feature                                                   | MINOR  |
+| `fix`       | a bug fix                                                       | PATCH  |
+| `docs`      | documentation only                                              | —      |
+| `style`     | whitespace, formatting, semicolons; never CSS or visual changes | —      |
+| `refactor`  | code change that neither fixes a bug nor adds a feature         | —      |
+| `perf`      | a performance improvement                                       | —      |
+| `test`      | adding or correcting tests                                      | —      |
+| `build`     | build system or dependencies                                    | —      |
+| `ci`        | CI configuration                                                | —      |
+| `chore`     | anything else with no production-code effect                    | —      |
+| `wayfinder` | a wayfinder map ticket/issue                                    | —      |
+| `spec`      | a spec (e.g. from a wayfinder map via `/to-spec`)               | —      |
+
+CSS, Tailwind classes, and other visual changes are code, never `style`: use `feat` for a new look, `fix` for a visual bug, and `refactor` for restructured styles with no visible change.
 
 A wayfinder map ticket/issue is always `wayfinder`, and a spec is always `spec` — the artifact decides the type, overriding what the change itself does (`feat`, `fix`, etc.).
 
@@ -85,7 +87,7 @@ A preset applies only when the staged diff is genuinely just that change; if any
 The feedback run. Re-read the drafted message against both the spec and the _staged_ diff. Every item must pass; if one fails, revise the message (or re-split the commit) and run the checklist again.
 
 - **Format**: matches `<type>[scope][!]: <description>` — lowercase type from the table, one colon + one space.
-- **Type matches reality**: the type describes what the staged diff does — not `feat` for a refactor, not `fix` for a new capability.
+- **Type matches reality**: the type describes what the staged diff does — not `feat` for a refactor, not `fix` for a new capability, not `style` for CSS or UI changes.
 - **Atomic**: the staged diff is one logical change; nothing unrelated is bundled in.
 - **Description**: imperative, concise, true to the change, and led by substance — no leading verb that merely echoes the type or fills space.
 - **Body/footers** (if any): blank-line separated; footer tokens well-formed; any breaking change flagged with `!` or an uppercase `BREAKING CHANGE:` footer.
